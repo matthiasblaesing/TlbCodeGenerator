@@ -118,25 +118,33 @@ public class TypeLib {
         for (int i = 0; i < typeInfoCount; ++i) {
             OaIdl.TYPEKIND typekind = typeLibUtil.getTypeInfoType(i);
             String name = typeLibUtil.getDocumentation(i).getName();
-            if (typekind.value == OaIdl.TYPEKIND.TKIND_ENUM) {
-                entriesBuilder.put(name, new TlbEnum(this, i));
-            } else if (typekind.value == OaIdl.TYPEKIND.TKIND_RECORD) {
-                LOG.info("'TKIND_RECORD' objects are currently not supported! => "
-                        + name);
-            } else if (typekind.value == OaIdl.TYPEKIND.TKIND_MODULE) {
-                LOG.info("'TKIND_MODULE' objects are currently not supported! => "
-                        + name);
-            } else if (typekind.value == OaIdl.TYPEKIND.TKIND_INTERFACE) {
-                entriesBuilder.put(name, new TlbInterface(this, i));
-            } else if (typekind.value == OaIdl.TYPEKIND.TKIND_DISPATCH) {
-                entriesBuilder.put(name, new TlbInterface(this, i));
-            } else if (typekind.value == OaIdl.TYPEKIND.TKIND_COCLASS) {
-                entriesBuilder.put(name, new TlbCoClass(this, i));
-            } else if (typekind.value == OaIdl.TYPEKIND.TKIND_ALIAS) {
-                entriesBuilder.put(name, new TlbAlias(this, i));
-            } else if (typekind.value == OaIdl.TYPEKIND.TKIND_UNION) {
-                LOG.info("'TKIND_UNION' objects are currently not supported! => "
-                        + name);
+            switch (typekind.value) {
+                case OaIdl.TYPEKIND.TKIND_ENUM:
+                    entriesBuilder.put(name, new TlbEnum(this, i));
+                    break;
+                case OaIdl.TYPEKIND.TKIND_RECORD:
+                    LOG.fine("'TKIND_RECORD' objects are currently not supported! => " + name);
+                    break;
+                case OaIdl.TYPEKIND.TKIND_MODULE:
+                    LOG.fine("'TKIND_MODULE' objects are currently not supported! => " + name);
+                    break;
+                case OaIdl.TYPEKIND.TKIND_INTERFACE:
+                    entriesBuilder.put(name, new TlbInterface(this, i));
+                    break;
+                case OaIdl.TYPEKIND.TKIND_DISPATCH:
+                    entriesBuilder.put(name, new TlbInterface(this, i));
+                    break;
+                case OaIdl.TYPEKIND.TKIND_COCLASS:
+                    entriesBuilder.put(name, new TlbCoClass(this, i));
+                    break;
+                case OaIdl.TYPEKIND.TKIND_ALIAS:
+                    entriesBuilder.put(name, new TlbAlias(this, i));
+                    break;
+                case OaIdl.TYPEKIND.TKIND_UNION:
+                    LOG.fine("'TKIND_UNION' objects are currently not supported! => " + name);
+                    break;
+                default:
+                    break;
             }
         }
         
