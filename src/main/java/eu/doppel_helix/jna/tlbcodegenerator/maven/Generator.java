@@ -7,6 +7,7 @@ import eu.doppel_helix.jna.tlbcodegenerator.imp.TlbEntry;
 import eu.doppel_helix.jna.tlbcodegenerator.imp.TlbEnum;
 import eu.doppel_helix.jna.tlbcodegenerator.imp.TlbInterface;
 import eu.doppel_helix.jna.tlbcodegenerator.imp.TypeLib;
+import eu.doppel_helix.jna.tlbcodegenerator.maven.util.JULBridge;
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
@@ -17,12 +18,16 @@ import freemarker.template.Version;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.plugin.AbstractMojo;
@@ -116,14 +121,20 @@ public class Generator extends AbstractMojo {
     
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        JULBridge bridge = new JULBridge(getLog());
         try {
             initDefaults();
 
+            ArrayList<File> dependencies = new ArrayList<>();
+            for(Artifact a: (Set<Artifact>) project.getArtifacts()) {
+                dependencies.add(a.getFile());
+            }
+            
             TypeLib typeLibrary;
             if (file != null) {
-                typeLibrary = new TypeLib(file);
+                typeLibrary = new TypeLib(dependencies, file);
             } else if (guid != null && major != null && minor != null) {
-                typeLibrary = new TypeLib(guid, major, minor);
+                typeLibrary = new TypeLib(dependencies, guid, major, minor);
             } else {
                 throw new MojoFailureException("Either file or guid need to be specified");
             }
@@ -132,29 +143,55 @@ public class Generator extends AbstractMojo {
             
             String packageName = getPackageName(typeLibrary);
 
-            File outputDir = null;
+            File srcOutputDir = null;
+            File rsrcOutputDir = null;
 
             if (! displayonly) {
-                outputDir = createDir(packageName);
-                writePackageInfo(typeLibrary, outputDir, cfg, packageName);
+                srcOutputDir = createSourceDir(packageName);
+                rsrcOutputDir = createResourceDir(packageName);
+                writePackageInfo(typeLibrary, srcOutputDir, cfg, packageName);
             }
 
             int typesCount = 0;
             int writtenCount = 0;
+            
+            Properties packageData = new Properties();
+            Properties typeData = new Properties();
+            
             for (TlbEntry ent : typeLibrary.getEntries().values()) {
                 typesCount++;
-                int written = writeEntry(typeLibrary, outputDir, cfg, ent, packageName, null, displayonly);
+                String qualifiedName = packageName + "." + FormatHelper.replaceJavaKeyword(ent.getName());
+                if(ent.getGuid() != null) {
+                    typeData.put(ent.getGuid(), qualifiedName);
+                }
+                int written = writeEntry(typeLibrary, srcOutputDir, cfg, ent, packageName, null, displayonly);
                 writtenCount += written;
             }
-
-            if(outputDir != null) {
-                getLog().info(String.format("%d/%d types parsed and results written to: %s", typesCount, writtenCount, outputDir.toString()));
+            
+            packageData.put("guid", typeLibrary.getUUID());
+            packageData.put("name", packageName);
+            packageData.put("nativename", typeLibrary.getName());
+            packageData.put("major", Integer.toString(typeLibrary.getMajorVersion()));
+            packageData.put("minor", Integer.toString(typeLibrary.getMinorVersion()));
+            
+            try (OutputStream info = new FileOutputStream(new File(rsrcOutputDir, packageName + ".info.properties"));
+                    OutputStream types = new FileOutputStream(new File(rsrcOutputDir, packageName + ".types.properties"));
+                    ) {
+                packageData.store(info, "");
+                typeData.store(types, "");
+            }
+            
+            
+            if(srcOutputDir != null) {
+                getLog().info(String.format("%d/%d types parsed and results written to: %s", typesCount, writtenCount, srcOutputDir.toString()));
             } else {
                 getLog().info(String.format("%d/%d types parsed", typesCount, writtenCount));
             }
 
         } catch (Exception e) {
             throw new MojoExecutionException("Faild to parse typelibrary", e);
+        } finally {
+            bridge.restore();
         }
     }
     
@@ -202,7 +239,7 @@ public class Generator extends AbstractMojo {
         return cfg;
     }
     
-    private File createDir(String packageName) {
+    private File createSourceDir(String packageName) {
         File _outputDir = new File(project.getBasedir(), "src/main/java");
 
         String path = packageName.replace(".", "/");
@@ -210,6 +247,12 @@ public class Generator extends AbstractMojo {
         _outputDir = new File(_outputDir, path);
         _outputDir.mkdirs();
         
+        return _outputDir;
+    }
+   
+    private File createResourceDir(String packageName) {
+        File _outputDir = new File(project.getBasedir(), "src/main/resources/META-INF/typelib");
+        _outputDir.mkdirs();
         return _outputDir;
     }
     
@@ -292,8 +335,7 @@ public class Generator extends AbstractMojo {
             fillTemplate(cfg, "CoClass.ftl", target, data, output);
             return 1;
         }
+        
         return 0;
     }
-    
-
 }

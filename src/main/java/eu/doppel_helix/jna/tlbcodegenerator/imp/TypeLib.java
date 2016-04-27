@@ -2,6 +2,7 @@
 package eu.doppel_helix.jna.tlbcodegenerator.imp;
 
 import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.COM.COMUtils;
 import com.sun.jna.platform.win32.COM.ITypeInfo;
 import com.sun.jna.platform.win32.COM.TypeInfoUtil;
 import com.sun.jna.platform.win32.COM.TypeLibUtil;
@@ -62,12 +63,23 @@ import com.sun.jna.platform.win32.WTypes;
 import com.sun.jna.platform.win32.WinBase;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.platform.win32.WinNT.HRESULT;
+import com.sun.jna.ptr.PointerByReference;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
 public class TypeLib {
@@ -86,6 +98,8 @@ public class TypeLib {
         basicTypes = Collections.unmodifiableSet(basicTypesBuilder);
     }
     
+    private final Map<String,String> guidPackageMap = new HashMap<>();
+    private final Map<String,String> guidTypeMap = new HashMap<>();
     private final Map<String,TlbEntry> entries;
     private final Map<String,String> primitives;
     private final String name;
@@ -95,15 +109,16 @@ public class TypeLib {
     private final int minorVersion;
     private final TypeLibUtil typeLibUtil;
     
-    public TypeLib(String clsid, int majorVersion, int minorVersion) {
-        this(new TypeLibUtil(clsid, majorVersion, minorVersion));
+    public TypeLib(List<File> classpath, String clsid, int majorVersion, int minorVersion) {
+        this(classpath, new TypeLibUtil(clsid, majorVersion, minorVersion));
     }
     
-    public TypeLib(String file) {
-        this(new TypeLibUtil(file));
+    public TypeLib(List<File> classpath, String file) {
+        this(classpath, new TypeLibUtil(file));
     }
     
-    private TypeLib(TypeLibUtil typeLibUtil) {
+    private TypeLib(List<File> classpath, TypeLibUtil typeLibUtil) {
+        addClasspathForTypeResolution(classpath);
         this.typeLibUtil = typeLibUtil;
         name = typeLibUtil.getName();
         majorVersion = typeLibUtil.getLibAttr().wMajorVerNum.intValue();
@@ -216,6 +231,51 @@ public class TypeLib {
         return typeLibUtil;
     }
 
+    private void addClasspathForTypeResolution(List<File> files) {
+        for (File f : files) {
+            try {
+                JarFile jf = new JarFile(f);
+                Enumeration<JarEntry> entries = jf.entries();
+                while (entries.hasMoreElements()) {
+                    JarEntry je = entries.nextElement();
+                    if (je.getName().startsWith("META-INF/typelib")
+                            && je.getName().endsWith("info.properties")) {
+                        Properties props = new Properties();
+                        try (InputStream is = jf.getInputStream(je)) {
+                            props.load(is);
+                            if (props.containsKey("guid")) {
+                                guidPackageMap.put(
+                                        props.getProperty("guid").toLowerCase(),
+                                        props.getProperty("name"));
+                            }
+                        }
+                    }
+                    if (je.getName().startsWith("META-INF/typelib")
+                            && je.getName().endsWith("types.properties")) {
+                        Properties props = new Properties();
+                        try (InputStream is = jf.getInputStream(je)) {
+                            props.load(is);
+                            for (Object key : props.keySet()) {
+                                guidTypeMap.put(
+                                        ((String) key).toLowerCase(), 
+                                        (String) props.get(key));
+                            }
+                        }
+                    }
+                }
+            } catch (IOException ex) {
+                LOG.warning("Failed to parse file " + f.getAbsolutePath());
+            }
+        }
+
+        for (Entry<String, String> e : guidTypeMap.entrySet()) {
+            LOG.fine(String.format("Type: %s => %s", e.getKey(), e.getValue()));
+        }
+        for (Entry<String, String> e : guidPackageMap.entrySet()) {
+            LOG.fine(String.format("Package: %s => %s", e.getKey(), e.getValue()));
+        }
+    }
+    
     /**
      * Gets the var type.
      *
@@ -336,29 +396,42 @@ public class TypeLib {
             OaIdl.TYPEDESC referenced = reftiu.getTypeAttr().tdescAlias;
             return getType(reftiu, referenced);
         } else {
-//            PointerByReference pbr = new PointerByReference();
-//            HRESULT hr = reftiu.GetContainingTypeLib().getTypeLib().GetLibAttr(pbr);
-//            if (COMUtils.SUCCEEDED(hr)) {
-//                OaIdl.TLIBATTR tlib = new OaIdl.TLIBATTR(pbr.getValue());
-//                try {
-//                    if(tlib.guid.toGuidString().equals(getUUID()) 
-//                            && tlib.wMajorVerNum.intValue() == getMajorVersion() 
-//                            && tlib.wMinorVerNum.intValue() == getMinorVersion()) {
+            String guid1 = tiu.getTypeAttr().guid.toGuidString().toLowerCase();
+            String guid2 = reftiu.getTypeAttr().guid.toGuidString().toLowerCase();
+            if(guidTypeMap.containsKey(guid1)) {
+                return guidTypeMap.get(guid1);
+            }
+            if(guidTypeMap.containsKey(guid2)) {
+                return guidTypeMap.get(guid2);
+            }
+            
+            PointerByReference pbr = new PointerByReference();
+            HRESULT hr = reftiu.GetContainingTypeLib().getTypeLib().GetLibAttr(pbr);
+            if (COMUtils.SUCCEEDED(hr)) {
+                OaIdl.TLIBATTR tlib = new OaIdl.TLIBATTR(pbr.getValue());
+                String lcGUID = tlib.guid.toGuidString().toLowerCase();
+                try {
+                    if(tlib.guid.toGuidString().equalsIgnoreCase(getUUID()) 
+                            && tlib.wMajorVerNum.intValue() == getMajorVersion() 
+                            && tlib.wMinorVerNum.intValue() == getMinorVersion()) {
                         return documentation.getName();
-//                    } else {
-//                        return String.format("{%s-%d-%d}.%s",
-//                                tlib.guid.toGuidString(),
-//                                tlib.wMajorVerNum.intValue(),
-//                                tlib.wMinorVerNum.intValue(),
-//                                documentation.getName());
-//                    }
-//                } finally {
-//                    Auskommentiert -- leaked so memory
-//                    tiu.GetContainingTypeLib().getTypeLib().ReleaseTLibAttr(tlib);
-//                }
-//            } else {
-//                return documentation.getName();
-//            }
+                    } else {
+                        if(guidPackageMap.containsKey(lcGUID)) {
+                            return guidPackageMap.get(lcGUID) + "." + documentation.getName();
+                        } else {
+                            return String.format("{%s-%d-%d}.%s",
+                                    tlib.guid.toGuidString(),
+                                    tlib.wMajorVerNum.intValue(),
+                                    tlib.wMinorVerNum.intValue(),
+                                    documentation.getName());
+                        }
+                    }
+                } finally {
+                    tiu.GetContainingTypeLib().getTypeLib().ReleaseTLibAttr(tlib);
+                }
+            } else {
+                return documentation.getName();
+            }
         }
     }
 
