@@ -1,3 +1,4 @@
+
 [#ftl]
 [#macro paramList params][#list params as param]
 [#if param?index > 0]            [/#if][#if (param.out)]VARIANT[#else]${typeLib.mapPrimitiveIfExists(param.type)}[/#if] ${param.name}[#sep],
@@ -5,6 +6,7 @@
 
 package ${package};
 
+import com.sun.jna.platform.win32.COM.util.AbstractComEventCallbackListener;
 import com.sun.jna.platform.win32.COM.util.annotation.ComEventCallback;
 import com.sun.jna.platform.win32.COM.util.annotation.ComInterface;
 import com.sun.jna.platform.win32.COM.util.IDispatch;
@@ -15,8 +17,11 @@ import com.sun.jna.platform.win32.Variant.VARIANT;
  *
 [/#if] * <p>uuid(${entry.guid})</p>
  */
-@ComInterface(iid="${entry.guid}")
-public interface ${javaName} {
+public abstract class ${javaName}Handler extends AbstractComEventCallbackListener implements ${javaName} {
+    @Override
+    public void errorReceivingCallbackEvent(java.lang.String string, java.lang.Exception excptn) {
+    }
+
     [#list entry.functions as function]
         [#assign returnValue=typeLib.mapPrimitiveIfExists(function.returnType)]
     /**
@@ -26,8 +31,9 @@ public interface ${javaName} {
 [/#if]
      * <p>id(${fh.formatHex(function.memberId)})</p>
      */
-    @ComEventCallback(dispid = ${fh.formatHex(function.memberId)})
-    ${returnValue} ${fh.prepareProperty(function.methodName, function.property, function.setter)}([@paramList params=function.params/]);
+    @Override
+    public [#if returnValue != 'void']abstract [/#if]${returnValue} ${fh.prepareProperty(function.methodName, function.property, function.setter)}([@paramList params=function.params/])[#if returnValue != 'void'];[#else]{
+    }[/#if]
             
     [/#list]
     

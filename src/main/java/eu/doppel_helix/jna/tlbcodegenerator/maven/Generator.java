@@ -315,6 +315,10 @@ public class Generator extends AbstractMojo {
                     target = new File(outputDirectory, javaName + "Listener.java");
                     fillTemplate(cfg, "InterfaceListener.ftl", target, data, output);
                     res++;
+                    data.put("javaName", javaName + "Listener");
+                    target = new File(outputDirectory, javaName + "ListenerHandler.java");
+                    fillTemplate(cfg, "InterfaceListenerHandler.ftl", target, data, output);
+                    res++;
                 }
             }
             return res;
