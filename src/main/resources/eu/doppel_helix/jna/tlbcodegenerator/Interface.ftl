@@ -9,6 +9,8 @@ import com.sun.jna.platform.win32.COM.util.annotation.ComInterface;
 import com.sun.jna.platform.win32.COM.util.annotation.ComMethod;
 import com.sun.jna.platform.win32.COM.util.annotation.ComProperty;
 import com.sun.jna.platform.win32.COM.util.IDispatch;
+import com.sun.jna.platform.win32.COM.util.IUnknown;
+import com.sun.jna.platform.win32.COM.util.IRawDispatchHandle;
 import com.sun.jna.platform.win32.Variant.VARIANT;
 
 /**
@@ -17,7 +19,7 @@ import com.sun.jna.platform.win32.Variant.VARIANT;
 [/#if] * <p>uuid(${entry.guid})</p>
  */
 @ComInterface(iid="${entry.guid}")
-public interface ${javaName} {
+public interface ${javaName} extends IUnknown, IRawDispatchHandle[#if (entry.dual || entry.dispatch || entry.dispatchable)], IDispatch[/#if] {
     [#list entry.functions as function]
     /**
 [#if (function.documentation)?has_content]

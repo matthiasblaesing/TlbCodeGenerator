@@ -1,5 +1,6 @@
 package eu.doppel_helix.jna.tlbcodegenerator.imp;
 
+import com.sun.jna.platform.win32.COM.ITypeInfo;
 import com.sun.jna.platform.win32.COM.TypeInfoUtil;
 import com.sun.jna.platform.win32.OaIdl;
 import static com.sun.jna.platform.win32.OaIdl.TYPEATTR.TYPEFLAGS_FDISPATCHABLE;
@@ -70,7 +71,7 @@ public class TlbInterface extends TlbEntry {
             // Release our variable description stuff
             typeInfoUtil.ReleaseVarDesc(varDesc);
         }
-        
+
         functions = Collections.unmodifiableList(functionsBuilder);
         variables = Collections.unmodifiableList(variablesBuilder);
     }

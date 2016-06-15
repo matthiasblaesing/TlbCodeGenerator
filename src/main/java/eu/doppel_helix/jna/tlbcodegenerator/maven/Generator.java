@@ -334,7 +334,6 @@ public class Generator extends AbstractMojo {
             if(! tcc.getSourceInterfaces().isEmpty()) {
                 interfaces.add("IConnectionPoint");
             }
-            interfaces.add("IUnknown");
             data.put("interfaces", interfaces);
             fillTemplate(cfg, "CoClass.ftl", target, data, output);
             return 1;

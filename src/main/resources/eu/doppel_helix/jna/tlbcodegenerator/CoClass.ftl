@@ -8,6 +8,7 @@ import com.sun.jna.platform.win32.COM.util.IComEventCallbackListener;
 import com.sun.jna.platform.win32.COM.util.IConnectionPoint;
 import com.sun.jna.platform.win32.COM.util.IUnknown;
 import com.sun.jna.platform.win32.COM.util.annotation.ComObject;
+import com.sun.jna.platform.win32.COM.util.IRawDispatchHandle;
 
 /**
 [#if (entry.docString)?has_content] * ${entry.docString!}
@@ -21,8 +22,8 @@ import com.sun.jna.platform.win32.COM.util.annotation.ComObject;
 [/#list]
  */
 @ComObject(clsId = "${entry.guid}")
-public interface ${javaName}[#if interfaces?size > 0] extends[/#if][#list interfaces as iface]
-    ${fh.replaceJavaKeyword(iface)}[#sep],[/#sep][/#list]
+public interface ${javaName} extends IUnknown[#list interfaces as iface]
+    ,${fh.replaceJavaKeyword(iface)}[/#list]
 {
 
 }
