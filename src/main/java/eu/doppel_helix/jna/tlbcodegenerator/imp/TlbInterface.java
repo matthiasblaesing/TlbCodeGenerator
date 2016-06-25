@@ -45,7 +45,11 @@ public class TlbInterface extends TlbEntry {
             TypeInfoUtil.TypeInfoDoc typeInfoDoc2 = typeInfoUtil.getDocumentation(memberID);
             String methodName = typeInfoDoc2.getName();
 
-            if (!isReservedMethod(methodName)) {
+            if ((!isReservedMethod(methodName)) 
+                    // PROPERTYPUTREF is currently not correctly handled, so skip declarations
+                    && funcDesc.invkind.value != OaIdl.INVOKEKIND.INVOKE_PROPERTYPUTREF.value
+                    )
+            {
                 functionsBuilder.add(new TlbFunctionCall(tl, index, funcDesc, typeInfoUtil));
             }
 
