@@ -27,6 +27,9 @@ public interface ${javaName} extends IUnknown, IRawDispatchHandle[#if (entry.dua
      *
 [/#if]
      * <p>id(${fh.formatHex(function.memberId)})</p>
+[#if (function.vtableId)?has_content]
+     * <p>vtableId(${function.vtableId})</p>
+[/#if]
      */
     [#if function.property]@ComProperty[#else]@ComMethod[/#if](name = "${function.methodName}", dispId = ${fh.formatHex(function.memberId)})
     ${typeLib.mapPrimitiveIfExists(function.returnType)} ${fh.prepareProperty(function.methodName, function.property, function.setter)}([@paramList params=function.params/]);
