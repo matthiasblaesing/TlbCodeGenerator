@@ -1,6 +1,6 @@
 [#ftl]
 [#macro paramList params][#list params as param]
-[#if param?index > 0]            [/#if][#if (param.out)]VARIANT[#else]${typeLib.mapPrimitiveIfExists(param.type)}[/#if] ${param.name}[#sep], [/#sep][/#list][/#macro]
+[#if param?index > 0]            [/#if][#if (param.out)]VARIANT[#else]${typeLib.mapPrimitiveIfExists(param.javaType)} /* ${typeLib.mapPrimitiveIfExists(param.type)} */[/#if] ${param.name}[#sep], [/#sep][/#list][/#macro]
 
 ${package}.${javaName} (${entry.guid!})
     [#list entry.functions as function]

@@ -1,7 +1,10 @@
 [#ftl]
 [#macro paramList params][#list params as param]
-[#if param?index > 0]            [/#if][#if (param.out)]VARIANT[#else]${typeLib.mapPrimitiveIfExists(param.type)}[/#if] ${param.name}[#sep],
+[#if param?index > 0]            [/#if][#if (param.out)]VARIANT[#else]${typeLib.mapPrimitiveIfExists(param.javaType)}[/#if] ${param.name}[#sep],
 [/#sep][/#list][/#macro]
+[#macro paramListDoc params][#list params as param]
+     * @param ${param.name} ${"["}[#if (param.in)]in[/#if][#if (param.out)]out[/#if][#if (param.optional)], optional[/#if]${"]"} {@code ${param.type}}
+[/#list][/#macro]
 
 package ${package};
 
@@ -30,6 +33,7 @@ public interface ${javaName} extends IUnknown, IRawDispatchHandle[#if (entry.dua
 [#if (function.vtableId)?has_content]
      * <p>vtableId(${function.vtableId})</p>
 [/#if]
+[@paramListDoc params=function.params/]
      */
     [#if function.property]@ComProperty[#else]@ComMethod[/#if](name = "${function.methodName}", dispId = ${fh.formatHex(function.memberId)})
     ${typeLib.mapPrimitiveIfExists(function.returnType)} ${fh.prepareProperty(function.methodName, function.property, function.setter)}([@paramList params=function.params/]);

@@ -21,13 +21,21 @@ public class TlbFunctionCallParam {
 
     public TlbFunctionCallParam(TypeLib tl, TypeInfoUtil typeInfoUtil, OaIdl.FUNCDESC funcDesc, int paramIndex, String name) {
         OaIdl.ELEMDESC elemdesc = funcDesc.lprgelemdescParam.elemDescArg[paramIndex];
+        this.paramFlags = elemdesc._elemdesc.paramdesc.wParamFlags.intValue();
         this.type = tl.getType(typeInfoUtil, elemdesc);
         this.name = name;
-        this.paramFlags = elemdesc._elemdesc.paramdesc.wParamFlags.intValue();
     }
 
     public String getType() {
         return type;
+    }
+    
+    public String getJavaType() {
+        if(isOptional()) {
+            return "Object";
+        } else {
+            return getType();
+        }
     }
 
     public String getName() {
