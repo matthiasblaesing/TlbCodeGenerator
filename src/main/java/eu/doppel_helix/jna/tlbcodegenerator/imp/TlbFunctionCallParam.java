@@ -18,12 +18,14 @@ public class TlbFunctionCallParam {
     private final String type;
     private final String name;
     private final int paramFlags;
+    private final TypeLib tl;
 
     public TlbFunctionCallParam(TypeLib tl, TypeInfoUtil typeInfoUtil, OaIdl.FUNCDESC funcDesc, int paramIndex, String name) {
         OaIdl.ELEMDESC elemdesc = funcDesc.lprgelemdescParam.elemDescArg[paramIndex];
         this.paramFlags = elemdesc._elemdesc.paramdesc.wParamFlags.intValue();
         this.type = tl.getType(typeInfoUtil, elemdesc);
         this.name = name;
+        this.tl = tl;
     }
 
     public String getType() {
@@ -31,7 +33,7 @@ public class TlbFunctionCallParam {
     }
     
     public String getJavaType() {
-        if(isOptional()) {
+        if(tl.isMapOptionalToObject() && isOptional()) {
             return "Object";
         } else {
             return getType();

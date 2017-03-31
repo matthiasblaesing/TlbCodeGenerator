@@ -108,6 +108,7 @@ public class TypeLib {
     private final int majorVersion;
     private final int minorVersion;
     private final TypeLibUtil typeLibUtil;
+    private boolean mapOptionalToNull;
     
     public TypeLib(List<File> classpath, String clsid, int majorVersion, int minorVersion) {
         this(classpath, new TypeLibUtil(clsid, majorVersion, minorVersion));
@@ -473,4 +474,13 @@ public class TypeLib {
 
         return type;
     }
+
+    public boolean isMapOptionalToObject() {
+        return mapOptionalToNull;
+    }
+
+    public void setMapOptionalToObject(boolean mapOptionalToObject) {
+        this.mapOptionalToNull = mapOptionalToObject;
+    }
+
 }

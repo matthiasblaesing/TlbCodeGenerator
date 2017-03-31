@@ -119,6 +119,12 @@ public class Generator extends AbstractMojo {
     @Parameter(property = "tlbcodegenerator.displayonly", defaultValue = "false")
     private boolean displayonly;
     
+    /**
+     * If set to true option values are mapped to object, if false optional values are mapped to their "correct" type
+     */
+    @Parameter(property = "tlbcodegenerator.mapOptionalToObject", defaultValue = "false")
+    private boolean mapOptionalToObject;
+    
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         JULBridge bridge = new JULBridge(getLog());
@@ -138,6 +144,8 @@ public class Generator extends AbstractMojo {
             } else {
                 throw new MojoFailureException("Either file or guid need to be specified");
             }
+            
+            typeLibrary.setMapOptionalToObject(mapOptionalToObject);
 
             Configuration cfg = getFreemarkerConfig();
             
