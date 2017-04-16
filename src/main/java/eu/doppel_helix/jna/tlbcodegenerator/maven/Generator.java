@@ -95,7 +95,7 @@ public class Generator extends AbstractMojo {
     private Integer major;
 
     /**
-     * Minor version of typelibrary to analyse. If not specified, project mino
+     * Minor version of typelibrary to analyse. If not specified, project minor
      * version is used.
      */
     @Parameter(property = "tlbcodegenerator.minor")
