@@ -319,12 +319,8 @@ public class Generator extends AbstractMojo {
                 fillTemplate(cfg, "Interface.ftl", target, data, output);
                 res++;
                 if (tdi.isUsedAsSource()) {
-                    data.put("javaName", javaName + "Listener");
-                    target = new File(outputDirectory, javaName + "Listener.java");
-                    fillTemplate(cfg, "InterfaceListener.ftl", target, data, output);
-                    res++;
-                    data.put("javaName", javaName + "Listener");
-                    target = new File(outputDirectory, javaName + "ListenerHandler.java");
+                    data.put("javaName", javaName);
+                    target = new File(outputDirectory, javaName + "Handler.java");
                     fillTemplate(cfg, "InterfaceListenerHandler.ftl", target, data, output);
                     res++;
                 }
