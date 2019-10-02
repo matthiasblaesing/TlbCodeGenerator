@@ -8,8 +8,20 @@ be created automaticly.
 Installation
 ============
 
-Currently the maven plugin is not published to maven central, so it
-needs to be installed into the local repository. To do this, run:
+Currently the maven plugin is not published to maven central.
+You may add the following repository to your Plugin Repositories in order
+to download a pre packaged distribution.
+```
+<pluginRepositories>
+    <pluginRepository>
+        <id>TlbCodeGenerator</id>
+        <name>TlbCodeGenerator</name>
+        <url>https://dl.bintray.com/bjoernakamanf/Qwertzimus</url>
+    </pluginRepository>
+</pluginRepositories>
+```
+
+Alternatively you may install it into the local repository. To do this, run:
 
 ```
 mvn install
