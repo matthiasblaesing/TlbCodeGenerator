@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.doppel_helix.jna.tlbcodegenerator</groupId>
     <artifactId>TlbCodeGenerator</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>maven-plugin</packaging>
-    
+
+    <distributionManagement>
+        <repository>
+            <id>bt-bjoernakamanf-releases</id>
+            <name>bjoernakamanf-Qwertzimus</name>
+            <url>https://api.bintray.com/maven/${bintray.subject}/${bintray.repo}/${project.artifactId}/;publish=1</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <bintray.subject>bjoernakamanf</bintray.subject>
+        <bintray.repo>Qwertzimus</bintray.repo>
+        <bintray.root>eu/doppel_helix/jna/tlbcodegenerator/TlbCodeGenerator</bintray.root>
     </properties>
 
     <dependencies>
@@ -45,9 +57,22 @@
             <version>4.3.0</version>
         </dependency>
     </dependencies>
-    
+
     <build>
+        <resources>
+            <resource>
+                <directory>.travis</directory>
+                <targetPath>${project.build.directory}/.travis</targetPath>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
+            <!-- 3.X required due to https://issues.apache.org/jira/browse/MRESOURCES-99 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>

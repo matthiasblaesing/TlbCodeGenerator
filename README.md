@@ -1,3 +1,6 @@
+[ ![Download](https://api.bintray.com/packages/bjoernakamanf/Qwertzimus/TlbCodeGenerator/images/download.svg) ](https://bintray.com/bjoernakamanf/Qwertzimus/TlbCodeGenerator/_latestVersion)
+[![Build Status](https://travis-ci.com/BjoernAkAManf/TlbCodeGenerator.svg?branch=master)](https://travis-ci.com/BjoernAkAManf/TlbCodeGenerator) 
+
 TlbCodeGenerator is a code generator for COM libraries. Based on the
 type library information, bindings for many COM based libraries can
 be created automaticly.

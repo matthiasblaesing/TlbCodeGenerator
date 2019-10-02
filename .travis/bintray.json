@@ -1,0 +1,24 @@
+{
+    "package": {
+        "subject": "${bintray.subject}",
+        "repo": "${bintray.repo}",
+        "name": "${project.artifactId}"
+    },
+    "version": {
+        "name": "${project.version}",
+        "released": "${maven.build.timestamp}",
+        "vcs_tag": "${project.version}",
+        "gpgSign": false
+    },
+    "files": [
+        {
+            "includePattern": "pom.xml",
+            "uploadPattern": "${bintray.root}/${project.version}/${project.artifactId}-${project.version}.pom"
+        },
+        {
+            "includePattern": "${project.build.directory}/(.*\.jar)",
+            "uploadPattern": "${bintray.root}/${project.version}/$1"
+        }
+    ],
+    "publish": true
+}
