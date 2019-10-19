@@ -1,5 +1,6 @@
 package eu.doppel_helix.jna.tlbcodegenerator.imp;
 
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.COM.TypeInfoUtil;
 import com.sun.jna.platform.win32.COM.TypeInfoUtil.TypeInfoDoc;
@@ -48,7 +49,7 @@ public class TlbFunctionCall {
         typeIndex = index;
         returnType = tl.getType(typeInfoUtil, funcDesc);
         if(funcDesc.oVft.shortValue() != 0) {
-            vtableId = (short) (funcDesc.oVft.shortValue() / Pointer.SIZE);
+            vtableId = (short) (funcDesc.oVft.shortValue() / Native.POINTER_SIZE);
         } else {
             vtableId = null;
         }
