@@ -68,24 +68,20 @@ import org.apache.maven.project.MavenProject;
  *
  * <p>
  * <b>Microsoft Shell Controls And Automation</b></p>
- * <p>
- * Via file:</p>
  * <table>
+ * <caption>Via file:</caption>
  * <tr><th>file</th><td>shell32.dll</td></tr>
  * </table>
  *
- * <p>
- * Or via GUID, Major, Minor:</p>
- *
  * <table>
+ * <caption>Via GUID, Major, Minor:</caption>
  * <tr><th>guid</th><td>{50A7E9B0-70EF-11D1-B75A-00A0C90564FE}</td></tr>
  * <tr><th>major</th><td>1</td></tr>
  * <tr><th>minor</th><td>0</td></tr>
  * </table>
  *
- * <p>
- * <b>Microsoft Word 12.0 Object Library</b></p>
  * <table>
+ * <caption>Sample: Microsoft Word 12.0 Object Library</caption>
  * <tr><th>guid</th><td>{00020905-0000-0000-C000-000000000046}</td></tr>
  * <tr><th>major</th><td>8</td></tr>
  * <tr><th>minor</th><td>4</td></tr>
