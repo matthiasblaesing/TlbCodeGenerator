@@ -72,6 +72,14 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>target/generated-resources/license-files</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -128,12 +136,12 @@
                 <executions>
                     <execution>
                         <id>license-files</id>
-                        <phase>process-resources</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+                            <outputDirectory>${basedir}/target/generated-resources/license-files/META-INF</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${basedir}</directory>
