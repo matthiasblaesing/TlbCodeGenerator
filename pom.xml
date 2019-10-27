@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.doppel-helix.jna.tlbcodegenerator</groupId>
     <artifactId>TlbCodeGenerator</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <packaging>maven-plugin</packaging>
 
     <name>TlbCodeGenerator</name>
@@ -44,7 +44,7 @@
         <connection>scm:git:https://github.com/matthiasblaesing/TlbCodeGenerator.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/matthiasblaesing/TlbCodeGenerator.git</developerConnection>
         <url>https://github.com/matthiasblaesing/TlbCodeGenerator</url>
-      <tag>HEAD</tag>
+      <tag>TlbCodeGenerator-1.0.1</tag>
   </scm>
 
     <dependencies>
