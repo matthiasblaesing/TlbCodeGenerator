@@ -24,7 +24,7 @@ system.
 Download
 --------
 
-[![Maven Central](https://img.shields.io/maven-central/v/eu.doppel-helix.jna.tlbcodegenerator/TlbCodeGenerator.svg?label=Maven%20Central)](https://search.maven.org/artifact/eu.doppel-helix.jna.tlbcodegenerator/TlbCodeGenerator/1.0.0/jar)&nbsp;[TlbCodeGenerator-1.0.0.jar](http://repo1.maven.org/maven2/eu/doppel-helix/jna/tlbcodegenerator/TlbCodeGenerator/1.0.0/TlbCodeGenerator-1.0.0.jar)
+[![Maven Central](https://img.shields.io/maven-central/v/eu.doppel-helix.jna.tlbcodegenerator/TlbCodeGenerator.svg?label=Maven%20Central)](https://search.maven.org/artifact/eu.doppel-helix.jna.tlbcodegenerator/TlbCodeGenerator/1.0.1/jar)&nbsp;[TlbCodeGenerator-1.0.1.jar](http://repo1.maven.org/maven2/eu/doppel-helix/jna/tlbcodegenerator/TlbCodeGenerator/1.0.1/TlbCodeGenerator-1.0.1.jar)
 
 Listing
 -------
@@ -74,7 +74,7 @@ The first sample creates bindings for "OLE Automation (Ver 2.0)".
             <plugin>
                 <groupId>eu.doppel-helix.jna.tlbcodegenerator</groupId>
                 <artifactId>TlbCodeGenerator</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
                 <configuration>
                     <guid>{00020430-0000-0000-C000-000000000046}</guid>
                 </configuration>
@@ -156,7 +156,7 @@ The bindings of WIA looks like this:
             <plugin>
                 <groupId>eu.doppel-helix.jna.tlbcodegenerator</groupId>
                 <artifactId>TlbCodeGenerator</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
                 <configuration>
                     <file>c:/windows/system32/wiaaut.dll</file>
                 </configuration>

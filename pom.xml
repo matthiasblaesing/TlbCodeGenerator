@@ -6,6 +6,10 @@
     <version>1.0.1-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
+    <name>TlbCodeGenerator</name>
+    <description>Code generator for JNA COM support</description>
+    <url>https://github.com/matthiasblaesing/TlbCodeGenerator</url>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
