@@ -57,7 +57,6 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -92,7 +91,7 @@ import org.apache.maven.project.MavenProject;
 @Mojo(name = "generate", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class Generator extends AbstractMojo {
 
-    @Component
+    @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
     /**
@@ -144,9 +143,16 @@ public class Generator extends AbstractMojo {
      */
     @Parameter(property = "tlbcodegenerator.mapOptionalToObject", defaultValue = "false")
     private boolean mapOptionalToObject;
-    
+
+    @Parameter(property = "tlbcodegenerator.skip")
+    private boolean skip;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if(skip) {
+            getLog().info("Skipping code generator");
+            return;
+        }
         JULBridge bridge = new JULBridge(getLog());
         try {
             initDefaults();
